@@ -1,0 +1,39 @@
+//sqrt(abs(x)) + 5 * e ^ (3 * ln(x))
+//*X = 100 <- THIS IS THE ARG
+//101 = 0 <- This is the final result
+//102 = 5 <- CONSTANT FOR MPY
+//103 = 3 <- Constant
+//104 = 0 <- MY SPARE ZERO
+//105 = 0 <- Var sqrt(abs(x))
+//106 = 0 <- Var for 5 * e ^ (3 * ln(x))
+
+%IP 0000
+//Data used for F(x)
+0100 DATA 0 0 5 3 0 0 0
+
+//Input list
+0200 DATA 0 1 2 3 4 5 6 7 8 9 10
+
+//Loop over the list, in reverse
+//Initiate RA as my counter
+0000    NOOP    0   0000    0000    0000    SETRA   0010
+//Move X (0200 + RA) value into 0100 via (A + RA) + 0 = 0100
+//Jump to 0010
+0001    ADD     4   0200    0104    0100    TR      0010
+//Jump back here after F(x). Skips end of loop if RA == 0
+0002    NOOP    0   0000    0000    0000    SKRA    0000
+//Decrememnt RA, and loop
+0003    NOOP    0   0000    0000    0000    TDA     0001
+
+//F(x) = sqrt(abs(x)) + 5 * e ^ (3 * ln(x))
+0010    ABADD   0   0100    0104    0105    -   -
+0011    SQRT    0   0105    0000    0105    -   -
+
+0012    LN      0   0100    0000    0106    -   -
+0013    MPY     0   0106    0106    0106    -   -
+0014    EXP     0   0106    0000    0106    -   -
+0015    MPY     0   0106    0102    0106    -   -
+
+0016    ADD     0   0105    0106    0101    -   -
+
+0017    PRINT   0   0100    0105    0000    TR  0002

@@ -1,0 +1,16 @@
+{
+  "name": "speedco",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "type": "module",
+  "scripts": {
+    "speedco": "tsx --tsconfig tsconfig.json src/index.ts",
+    "build": "esbuild --bundle src/index.ts --outdir=dist --sourcemap --platform=browser"
+  },
+  "author": "Sean Haas",
+  "license": "ISC",
+  "description": "SpeedCo I for the WEB!",
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
+}
