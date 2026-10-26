@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { Tape } from 'tape';
 
 type TExpression = {
     LOC: number,
@@ -28,7 +29,21 @@ let RC = 0;
 let IP = 0;
 let running = true;
 
+/**
+ * My fake tapes: J, K, L, M
+ * These are initialized with the %TAPE X directive
+ * Where X is the tape drive to load
+ */
+let tapes = {
+    "J": new Tape(),
+    "K": new Tape()
+}
+
 const OP1s: Record<number, TOperation> = {
+    /**
+     * Math Operations
+     */
+
     658: {
         identifier: "ADD",
         code: 658,
@@ -58,9 +73,28 @@ const OP1s: Record<number, TOperation> = {
 
     703: {
         identifier: "ABADD",
-        code: 699,
+        code: 703,
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.abs(mem[Q(exp, "A")]) + Math.abs(mem[Q(exp, "B")])
+            return exp.LOC + 1
+        }
+    },
+
+    707: {
+        identifier: "SUBAB",
+        code: 707,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = mem[Q(exp, "A")] - Math.abs(mem[Q(exp, "B")])
+            return exp.LOC + 1
+        }
+    },
+
+    
+    711: {
+        identifier: "ABSUB",
+        code: 711,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = Math.abs(mem[Q(exp, "A")]) - Math.abs(mem[Q(exp, "B")])
             return exp.LOC + 1
         }
     },
@@ -74,11 +108,56 @@ const OP1s: Record<number, TOperation> = {
         }
     },
 
+    731: {
+        identifier: "NGMPY",
+        code: 731,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = -1 * mem[Q(exp, "A")] * mem[Q(exp, "B")]
+            return exp.LOC + 1
+        }
+    },
+
+    734: {
+        identifier: "DIV",
+        code: 734,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = mem[Q(exp, "A")] / mem[Q(exp, "B")]
+            return exp.LOC + 1
+        }
+    },
+    
+    748: {
+        identifier: "NGDIV",
+        code: 748,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = -1 * mem[Q(exp, "A")] / mem[Q(exp, "B")]
+            return exp.LOC + 1
+        }
+    },
+
     782: {
         identifier: "SQRT",
         code: 782,
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.sqrt(mem[Q(exp, "A")])
+            return exp.LOC + 1
+        }
+    },
+
+    780: {
+        identifier: "SINE",
+        code: 780,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = Math.sin(mem[Q(exp, "A")])
+            return exp.LOC + 1
+        }
+    },
+
+    781: {
+        identifier: "ARTAN",
+        code: 781,
+        execute: (exp) => {
+            mem[Q(exp, "C")] = Math.atan(mem[Q(exp, "A")])
             return exp.LOC + 1
         }
     },
@@ -110,6 +189,67 @@ const OP1s: Record<number, TOperation> = {
         }
     },
 
+    /**
+     * Tape and Drum
+     */
+    532: {
+        identifier: "WRTPJ",
+        code: 532,
+        execute: (exp) => {
+            tapes['J'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
+            return exp.LOC + 1
+        }
+    },
+
+    533: {
+        identifier: "WRTPK",
+        code: 533,
+        execute: (exp) => {
+            tapes['K'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
+            return exp.LOC + 1
+        }
+    },
+
+    435: {
+        identifier: "RFTPJ",
+        code: 435,
+        execute: (exp) => {
+            mem.splice(Q(exp, "A"), Q(exp, "B") - Q(exp, "A") + 1, ...tapes['J'].read().slice(0, Q(exp, "B") - Q(exp, "A") + 1))
+            return exp.LOC + 1
+        }
+    },
+
+    556: {
+        identifier: "SFTPJ",
+        code: 556,
+        execute: (exp) => {
+            tapes['J'].skipForward()
+            return exp.LOC + 1
+        }
+    },
+
+    546: {
+        identifier: "SBTPJ",
+        code: 546,
+        execute: (exp) => {
+            tapes['J'].skipBackwards()
+            return exp.LOC + 1
+        }
+    },
+
+    566: {
+        identifier: "EFTPK",
+        code: 566,
+        execute: (exp) => {
+            //This is currently a no-op
+            return exp.LOC + 1
+        }
+    },
+
+
+    /**
+     * Extras
+     */
     751: {
         identifier: "NOOP",
         code: 751,
@@ -126,7 +266,7 @@ const OP1s: Record<number, TOperation> = {
                 return exp.LOC + 1
             }
 
-            for(let i = 0; i < exp.B - exp.A; i += 5){
+            for(let i = 0; i < exp.B - exp.A + 1; i += 5){
                 console.log(exp.C + " " + (i / 5) + " | " +  mem[exp.A + i] + " "  + mem[exp.A + i + 1] + " " + mem[exp.A + i + 2] + " " + mem[exp.A + i + 3] + " " + mem[exp.A + i + 4])
             }
 
@@ -168,11 +308,42 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    162: {
+        identifier: "SKRC",
+        code: 162,
+        execute: (exp) => {
+            if(RC == exp.D){
+                return exp.LOC + 2
+            }
+
+            return exp.LOC + 1
+        }
+    },
+
     128: {
         identifier: "TIA",
         code: 128,
         execute: (exp) => {
             RA++
+            return exp.D
+        }
+    },
+
+    125: {
+        identifier: "TIC",
+        code: 125,
+        execute: (exp) => {
+            RC++
+            return exp.D
+        }
+    },
+
+    130: {
+        identifier: "TIAB",
+        code: 130,
+        execute: (exp) => {
+            RA++
+            RB++
             return exp.D
         }
     },
@@ -191,6 +362,24 @@ const OP2s: Record<number, TOperation> = {
         code: 139,
         execute: (exp) => {
             RA = exp.D
+            return exp.LOC + 1
+        }
+    },
+
+    250: {
+        identifier: "SETRB",
+        code: 250,
+        execute: (exp) => {
+            RB = exp.D
+            return exp.LOC + 1
+        }
+    },
+
+    145: {
+        identifier: "SETRC",
+        code: 145,
+        execute: (exp) => {
+            RC = exp.D
             return exp.LOC + 1
         }
     },
@@ -326,6 +515,16 @@ function strToExp(s: string): TExpression{
         alert("THAT'S NOT SPEEDCODING!")
     }
 
+    if(!(parts[1] in OP1Map)){
+        console.log("Unknown OP1: " + parts[1])
+        return unpack(BigInt(0))
+    }
+
+    if(parts[6] !== '-' && !(parts[6] in OP2Map)){
+        console.log("Unknown OP2: " + parts[6])
+        return unpack(BigInt(0))
+    }
+
     return {
         LOC: parseInt(parts[0]),
         sign: true,
@@ -357,6 +556,13 @@ function parseAndLoad(s: string){
         }else if(/^%IP/.test(l)){
             const parts = l.split(' ')
             IP = parseInt(parts[1])
+        }else if(/^%TAPE/.test(l)){
+            l.trim().split(/\s+/)
+            const parts = l.split(' ')
+
+            if(parts[1] in tapes){
+                tapes[parts[1]].write(parts.slice(2).map((s) => parseInt(s)))
+            }
         }
     })
 }
@@ -365,15 +571,15 @@ function executeExp(exp: TExpression){
     //printState()
 
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
-        //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
+        console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         return OP1s[exp.OP1].execute(exp)
     }
 
     if(exp.OP1 in OP1s && exp.OP2 in OP2s){
-        //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
+        console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         OP1s[exp.OP1].execute(exp)
 
-        //console.log("Running OP2: " + OP2s[exp.OP2].identifier)
+        console.log("Running OP2: " + OP2s[exp.OP2].identifier)
         return OP2s[exp.OP2].execute(exp)
     }
 }
