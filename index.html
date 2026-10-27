@@ -1,0 +1,121 @@
+<html>
+    <head>
+        <style>
+            #mem-pane{
+                display: block;
+                height: 400px;
+                overflow-y: scroll;
+                width: 400px;
+            }
+
+            .current-op{
+                background-color: red;
+            }
+
+            #tape-pane{
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body>
+        <table>
+            <tr>
+                <td id="mem-pane">
+                    <table id="mem"></table>
+                </td>
+
+                <td id="code-pane">
+                    <table>
+                        <tr>
+                            <td>
+                                <textarea id="code" cols="80" rows="25">
+%IP 0354 
+
+//Code to calculate A x B
+0354 ADD 0 1013 1013 1000 - -
+0355 MPY 6 0500 0900 1001 SKRB 0020
+0356 ADD 0 1000 1001 1000 TIAB 0355
+0357 ADD 1 1013 1000 0950 SETRB 0000
+0358 ADD 0 1013 1013 1000 SKRC 0017
+0359 NOOP 0 0000 0000 0000 TIC 0355
+0360 NOOP 0 0000 0000 0000 SETRC 0000
+0361 WRTPK 0 0950 0967 0000 SETRA 0000
+0362 RFTPJ 0 0900 0919 0000 - -
+0363 NOOP 0 0000 0000 0000 TR 0355
+0364 EFTPK 0 0000 0000 0000 TR 0366
+0365 SBTPJ 0 0000 0000 0000 STOP 0362
+
+//Matrix A (18 x 20)
+0500 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0520 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0520 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0540 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0560 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0580 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0600 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0620 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0640 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0660 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0680 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0700 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0720 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0740 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0760 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0780 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0800 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+0820 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+                
+//Columns for B (20 x 16)
+//  First column stored in RAM, rest on tape J
+0900 DATA 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+%TAPE J 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
+                                </textarea>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <button id="load">LOAD</button>
+                                <button id="step">STEP</button>
+                                <button id="run">RUN</button>
+                                <button id="stop">STOP</button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <label for="op-delay">Op Delay</label>
+                                <input id="op-delay" type="number" value="50" />
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td id="tape-pane">
+                    <h3>Tape J</h3>
+                    <table class='tape' id='tape-J'></table>
+
+                    <h3>Tape K</h3>
+                    <table class='tape' id='tape-K'></table>
+                </td>
+            </tr>
+        </table>
+
+        <script src="dist/web-entry.js"></script>
+    </body>
+</html>

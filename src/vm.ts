@@ -49,7 +49,7 @@ export function setRunning(b){
  * These are initialized with the %TAPE X directive
  * Where X is the tape drive to load
  */
-let tapes = {
+export let tapes = {
     "J": new Tape(),
     "K": new Tape()
 }
@@ -594,21 +594,25 @@ export function parseAndLoad(s: string){
             }
         }
     })
+
+    //Rewind the tapes!
+    tapes['J'].rewind()
+    tapes['K'].rewind()
 }
 
 export function executeExp(exp: TExpression){
     //printState()
 
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
-        console.log("Running OP1: " + OP1s[exp.OP1].identifier)
+        //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         return OP1s[exp.OP1].execute(exp)
     }
 
     if(exp.OP1 in OP1s && exp.OP2 in OP2s){
-        console.log("Running OP1: " + OP1s[exp.OP1].identifier)
+        //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         OP1s[exp.OP1].execute(exp)
 
-        console.log("Running OP2: " + OP2s[exp.OP2].identifier)
+        //console.log("Running OP2: " + OP2s[exp.OP2].identifier)
         return OP2s[exp.OP2].execute(exp)
     }
 }

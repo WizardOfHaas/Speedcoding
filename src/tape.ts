@@ -11,6 +11,10 @@ export class Tape{
         return this.records
     }
 
+    getHead(){
+        return this.currRecord
+    }
+
     /**
      * Write
      * Read
@@ -26,7 +30,9 @@ export class Tape{
     }
 
     read(): Array<number>{
-        return this.records[this.currRecord]
+        const record = this.records[this.currRecord]
+        this.currRecord++
+        return record
     }
 
     skipForward(){
