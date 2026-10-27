@@ -22,9 +22,9 @@ type TOperation = {
 }
 
 export let mem = Array(1024).fill(0)
-let RA = 0;
-let RB = 0;
-let RC = 0;
+export let RA = 0;
+export let RB = 0;
+export let RC = 0;
 export let IP = 0;
 export let running = true
 
@@ -304,6 +304,18 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    112: {
+        identifier: "TRZ",
+        code: 112,
+        execute: (exp) => {
+            if(mem[Q(exp, "C")] === 0){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
+        }
+    },
+
     152: {
         identifier: "SKRA",
         code: 152,
@@ -364,6 +376,27 @@ const OP2s: Record<number, TOperation> = {
         execute: (exp) => {
             RA++
             RB++
+            return exp.D
+        }
+    },
+
+    129: {
+        identifier: "TIAC",
+        code: 129,
+        execute: (exp) => {
+            RA++
+            RC++
+            return exp.D
+        }
+    },
+
+    131: {
+        identifier: "TIABC",
+        code: 131,
+        execute: (exp) => {
+            RA++
+            RB++
+            RC++
             return exp.D
         }
     },
@@ -575,10 +608,21 @@ function strToExp(s: string): TExpression{
 
 export function resetHard(){
     mem = Array(1024).fill(0)
-    resetTapes()
+    clearTapes()
+    rewindTapes()
+    clearPrinter()
 }
 
-export function resetTapes(){
+export function clearPrinter(){
+    printBuffer = []
+}
+
+export function clearTapes(){
+    tapes['J'].clearRecords()
+    tapes['K'].clearRecords()
+}
+
+export function rewindTapes(){
     tapes['J'].rewind()
     tapes['K'].rewind()
 }
@@ -613,7 +657,7 @@ export function parseAndLoad(s: string){
     })
 
     //Rewind the tapes!
-    resetTapes()
+    rewindTapes()
 }
 
 export function executeExp(exp: TExpression){

@@ -46,4 +46,8 @@ export class Tape{
     rewind(){
         this.currRecord = 0
     }
+
+    clearRecords(){
+        this.records = []
+    }
 }
