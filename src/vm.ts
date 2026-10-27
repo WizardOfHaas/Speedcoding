@@ -54,6 +54,11 @@ export let tapes = {
     "K": new Tape()
 }
 
+/**
+ * Print goes here, to be picked up later
+ */
+export let printBuffer: Array<string> = []
+
 const OP1s: Record<number, TOperation> = {
     /**
      * Math Operations
@@ -282,7 +287,7 @@ const OP1s: Record<number, TOperation> = {
             }
 
             for(let i = 0; i < exp.B - exp.A + 1; i += 5){
-                console.log(exp.C + " " + (i / 5) + " | " +  mem[exp.A + i] + " "  + mem[exp.A + i + 1] + " " + mem[exp.A + i + 2] + " " + mem[exp.A + i + 3] + " " + mem[exp.A + i + 4])
+                printBuffer.push(exp.C + " " + (i / 5) + " | " +  mem[exp.A + i] + " "  + mem[exp.A + i + 1] + " " + mem[exp.A + i + 2] + " " + mem[exp.A + i + 3] + " " + mem[exp.A + i + 4])
             }
 
             return exp.LOC + 1
@@ -568,7 +573,19 @@ function strToExp(s: string): TExpression{
     }
 }
 
+export function resetHard(){
+    mem = Array(1024).fill(0)
+    resetTapes()
+}
+
+export function resetTapes(){
+    tapes['J'].rewind()
+    tapes['K'].rewind()
+}
+
 export function parseAndLoad(s: string){
+    resetHard()
+
     s.split("\n").forEach((l) => {
         //Test if line is expression or data directive
         if(/DATA/.test(l)){
@@ -596,8 +613,7 @@ export function parseAndLoad(s: string){
     })
 
     //Rewind the tapes!
-    tapes['J'].rewind()
-    tapes['K'].rewind()
+    resetTapes()
 }
 
 export function executeExp(exp: TExpression){

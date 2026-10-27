@@ -1,4 +1,4 @@
-import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes } from 'vm'
+import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer } from 'vm'
 
 function displayMem(){
     document.getElementById("mem").innerHTML = mem.map((d, addr) => {
@@ -17,24 +17,29 @@ function displayTape(tapeName: string){
     })
 }
 
+function displayPrintBuffer(){
+    document.getElementById("printer").innerHTML = printBuffer.join("</br>")
+}
+
 function loadCodePane(){
     parseAndLoad(document.getElementById("code").value)
+    showState()
+    document.getElementById('addr-' + getIp()).scrollIntoView()
 }
 
 function showState(){
     displayMem()
     displayTape("J")
     displayTape("K")
+    displayPrintBuffer()
 }
 
-loadCodePane()
 showState()
+loadCodePane()
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-document.getElementById('addr-' + getIp()).scrollIntoView();
 
 document.getElementById("load").onclick = () => {
     loadCodePane()
