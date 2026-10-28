@@ -50,8 +50,8 @@ document.getElementById("load").onclick = () => {
     loadCodePane()
 }
 
-document.getElementById("step").onclick = () => {
-    step()
+document.getElementById("step").onclick = async () => {
+    await step()
     showState()
 }
 
@@ -59,8 +59,8 @@ document.getElementById("run").onclick = async () => {
     setRunning(true)
 
     while(getRunning()){
-        const nextIp = execute(mem[getIp()])
-        await sleep(document.getElementById("op-delay").value)
+        const nextIp = await execute(mem[getIp()])
+        //await sleep(document.getElementById("op-delay").value)
 
         if(typeof nextIp === "undefined"){
             console.log("HALTING FOR SAFETY")

@@ -298,7 +298,8 @@ const OP1s: Record<number, TOperation> = {
         code: 751,
         execute: (exp) => {
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 2.736
     },
 
     580: { //I need to change this to only print what's asked for, not 5 each line
@@ -314,7 +315,8 @@ const OP1s: Record<number, TOperation> = {
             }
 
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 2.896 //This is the smallest average
     },
 }
 
@@ -683,31 +685,44 @@ export function parseAndLoad(s: string){
     rewindTapes()
 }
 
-export function executeExp(exp: TExpression){
+export async function executeExp(exp: TExpression){
     //printState()
+    let nextIp = 0
+    let timing = 0
 
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
-        return OP1s[exp.OP1].execute(exp)
+        nextIp = OP1s[exp.OP1].execute(exp)
+        timing += typeof OP1s[exp.OP1].timing !== "undefined" ? OP1s[exp.OP1].timing(exp) : 0
     }
 
     if(exp.OP1 in OP1s && exp.OP2 in OP2s){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         OP1s[exp.OP1].execute(exp)
+        timing += typeof OP1s[exp.OP1].timing !== "undefined" ? OP1s[exp.OP1].timing(exp) : 0
 
         //console.log("Running OP2: " + OP2s[exp.OP2].identifier)
-        return OP2s[exp.OP2].execute(exp)
+        nextIp = OP2s[exp.OP2].execute(exp)
+        timing += typeof OP2s[exp.OP2].timing !== "undefined" ? OP2s[exp.OP2].timing(exp) : 0
     }
+
+    await sleep(timing)
+
+    return nextIp
 }
 
-export function execute(v: bigint){
-    return executeExp(unpack(v, IP))
+export async function execute(v: bigint){
+    return await executeExp(unpack(v, IP))
 }
 
-export function step(){
-    const nextIp = execute(mem[IP])
+export async function step(){
+    const nextIp = await execute(mem[IP])
 
     if(typeof nextIp !== 'undefined'){
         IP = nextIp
     }
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
