@@ -1,33 +1,25 @@
-//1D LIFE
+//SUM OF SQUARES
 //Memory used:
 // 0000 - Iterator, starts at 1
-// 0001 - Running sum of neighbors
+// 0001 - Running sum
 // 0002 - Current square
 // 0003 - MY SPARE 1
-// 0004 - MY SPARE 0
 
 //top_of_loop:
-//  Reset to start of array
-//  Look for neighbors(INDEXED)
-//  Count sum, print
+//  multiply iterator by itself
+//  add that to running total
+//  print what I got
+//  increment
+//  if i < MAX jump to top_of_loop
 
-%IP 0100
 
-0000 DATA 1 0 0 1 0
-//SECRET LEFT HAND 0
-0009 DATA 0
+%IP 0099
 
-//ARRAY of 10 life-forms
-0010 DATA 0 1 1 1 0 0 0 0 0 0
+0000 DATA 1 0 0 1
 
-//SECRET RIGHT HAND 0
-0020 DATA 0
-
-0100 NOOP 0 0000 0000 0000 SETRA 0000
-0101 MPY 0 0001 0004 0001 - - //Clear sum
-0102 ADD 4 0009 0001 0001 - - //Left hand neighbor
-0103 ADD 4 0010 0001 0001 - - //Self
-0104 ADD 4 0011 0001 0001 - - //Right hand neighbor
-0105 PRINT 0 0001 0002 0000 - - //Print sum
-0106 NOOP 0 0000 0000 0000 SKRA 0009
-0107 NOOP 0 0000 0000 0000 TIA 0101
+0099 NOOP 0 0000 0000 0000 SETRA 0000 //Set upper bound for loop
+0100 MPY 0 0000 0000 0002 - - //Square the iterator
+0101 ADD 0 0002 0001 0001 - - //Add the square to sum
+0102 PRINT 0 0000 0002 0000 - - //Print it
+0103 ADD 0 0000 0003 0000 SKRA 0050 //Increment, skips transfer if [0000] == 5
+0104 NOOP 0 0000 0000 0000 TIA 0100 //Uncond trasnfer
