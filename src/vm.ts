@@ -233,7 +233,7 @@ const OP1s: Record<number, TOperation> = {
         identifier: "WRTPJ",
         code: 532,
         execute: (exp) => {
-            tapes['J'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
+            tapes['J'].write(mem.slice(Q(exp, "A"), Q(exp, "B") + 1))
             return exp.LOC + 1
         },
         timing: (exp) => 14 + 1.6 * (Q(exp, "B") - Q(exp, "A") + 1)
@@ -243,7 +243,7 @@ const OP1s: Record<number, TOperation> = {
         identifier: "WRTPK",
         code: 533,
         execute: (exp) => {
-            tapes['K'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
+            tapes['K'].write(mem.slice(Q(exp, "A"), Q(exp, "B") + 1))
             return exp.LOC + 1
         },
         timing: (exp) => 14 + 1.6 * (Q(exp, "B") - Q(exp, "A") + 1)
