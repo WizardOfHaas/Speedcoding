@@ -18,7 +18,8 @@ type TOperation = {
     code: number,
     //This may need to return an address for next execution...
     //  Or I could just do the global state thing
-    execute: (exp: TExpression) => number
+    execute: (exp: TExpression) => number,
+    timing?: (exp: TExpression) => number //In seconds
 }
 
 export let mem = Array(1024).fill(0)
@@ -70,7 +71,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] + mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.2
     },
 
     696: {
@@ -79,7 +81,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] - mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.368
     },
 
     699: {
@@ -88,7 +91,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] + Math.abs(mem[Q(exp, "B")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.428
     },
 
     703: {
@@ -97,7 +101,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.abs(mem[Q(exp, "A")]) + Math.abs(mem[Q(exp, "B")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.656
     },
 
     707: {
@@ -106,7 +111,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] - Math.abs(mem[Q(exp, "B")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.428
     },
 
     
@@ -116,7 +122,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.abs(mem[Q(exp, "A")]) - Math.abs(mem[Q(exp, "B")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 4.656
     },
 
     715: {
@@ -125,7 +132,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] * mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 3.546
     },
 
     731: {
@@ -134,7 +142,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = -1 * mem[Q(exp, "A")] * mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 3.714
     },
 
     734: {
@@ -143,7 +152,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = mem[Q(exp, "A")] / mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 3.666
     },
     
     748: {
@@ -152,7 +162,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = -1 * mem[Q(exp, "A")] / mem[Q(exp, "B")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 3.834
     },
 
     782: {
@@ -161,7 +172,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.sqrt(mem[Q(exp, "A")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 8.9
     },
 
     780: {
@@ -170,7 +182,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.sin(mem[Q(exp, "A")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 13
     },
 
     781: {
@@ -179,7 +192,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.atan(mem[Q(exp, "A")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 13
     },
 
     783: {
@@ -188,7 +202,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.E ** mem[Q(exp, "A")]
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 13
     },
 
     784: {
@@ -197,16 +212,18 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem[Q(exp, "C")] = Math.log(mem[Q(exp, "A")])
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 33
     },
 
     690: {
         identifier: "MOVE",
         code: 690,
         execute: (exp) => {
-            mem.splice(Q(exp, "C"), Q(exp, "B") - Q(exp, "A"), ...mem.slice(Q(exp, "A"), Q(exp, "B")))
+            mem.splice(Q(exp, "C"), Q(exp, "B") - Q(exp, "A") + 1, ...mem.slice(Q(exp, "A"), Q(exp, "B") + 1))
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 3.18 + 0.816 * (Q(exp, "B") - Q(exp, "A") + 1)
     },
 
     /**
@@ -218,7 +235,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             tapes['J'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 14 + 1.6 * (Q(exp, "B") - Q(exp, "A") + 1)
     },
 
     533: {
@@ -227,7 +245,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             tapes['K'].write(mem.slice(Q(exp, "A"), Q(exp, "B")))
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 14 + 1.6 * (Q(exp, "B") - Q(exp, "A") + 1)
     },
 
     435: {
@@ -236,7 +255,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             mem.splice(Q(exp, "A"), Q(exp, "B") - Q(exp, "A") + 1, ...tapes['J'].read().slice(0, Q(exp, "B") - Q(exp, "A") + 1))
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 14 + 1.6 * (Q(exp, "B") - Q(exp, "A") + 1)
     },
 
     556: {
@@ -245,7 +265,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             tapes['J'].skipForward()
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 14
     },
 
     546: {
@@ -254,7 +275,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             tapes['J'].skipBackwards()
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 14
     },
 
     566: {
@@ -263,7 +285,8 @@ const OP1s: Record<number, TOperation> = {
         execute: (exp) => {
             //This is currently a no-op
             return exp.LOC + 1
-        }
+        },
+        timing: (exp) => 2.832
     },
 
 
