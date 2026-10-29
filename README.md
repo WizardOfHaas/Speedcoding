@@ -2,6 +2,17 @@ This is a partial implementation of Speedcoding, as described here:
 
 https://archive.computerhistory.org/resources/access/text/2018/02/102678975-05-01-acc.pdf
 
+# How to SpeedCode
+This is a TS implementation, mainly so I can have data types for my sloppy code. To build and run just:
+
+`npm i`
+
+`npm run build`
+
+And then open the index.html in the root directly. That will take you to the web frontend.
+
+I'm planning to have a command line entry point aswell, but the web front makes debugging way easier.
+
 # I've modified the spec!
 In order to make SpeedCo usable (without access to a 701 machine room) I've added a few extra comamnds.
 
