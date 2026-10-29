@@ -1,4 +1,4 @@
-import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC } from 'vm'
+import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC } from 'vm'
 
 function displayMem(){
     document.getElementById("mem").innerHTML = mem.map((d, addr) => {
@@ -22,7 +22,7 @@ function displayPrintBuffer(){
 }
 
 function displayRegisters(){
-    document.getElementById("registers").innerHTML = "IP=" + IP + " Ra=" + RA + " Rb=" + RB + " Rc=" + RC
+    document.getElementById("registers").innerHTML = "IP=" + IP + " Ra=" + RA + " Rb=" + RB + " Rc=" + RC + " AC=" + AC
 }
 
 function loadCodePane(){

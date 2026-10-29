@@ -27,6 +27,7 @@ export let RA = 0;
 export let RB = 0;
 export let RC = 0;
 export let IP = 0;
+export let AC = 0;
 export let running = true
 
 export function getIp(){
@@ -306,13 +307,24 @@ const OP1s: Record<number, TOperation> = {
         identifier: "PRINT",
         code: 580,
         execute: (exp) => {
-            if(exp.A > exp.B){
+            const qa = Q(exp, "A")
+            const qb = Q(exp, "B")
+            if(qa > qb){
                 return exp.LOC + 1
             }
 
-            for(let i = 0; i < exp.B - exp.A + 1; i += 5){
-                printBuffer.push(exp.C + " " + (i / 5) + " | " +  mem[exp.A + i] + " "  + mem[exp.A + i + 1] + " " + mem[exp.A + i + 2] + " " + mem[exp.A + i + 3] + " " + mem[exp.A + i + 4])
+            let line = ""
+            for(let i = 0; i < qb - qa + 1; i++) {
+                if ( i % 5 == 0){
+                    if ( line )
+                        printBuffer.push(line)
+                    line = "";
+                    line = Q(exp, "C") + " " + (i / 5) + " |";
+                }
+                line += " "  + mem[qa + i];
             }
+            if ( line )
+                printBuffer.push(line)
 
             return exp.LOC + 1
         },
@@ -334,6 +346,18 @@ const OP2s: Record<number, TOperation> = {
         code: 112,
         execute: (exp) => {
             if(mem[Q(exp, "C")] === 0){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
+        }
+    },
+
+    115: {
+        identifier: "TRMN",
+        code: 115,
+        execute: (exp) => {
+            if(mem[Q(exp, "C")] < 0){
                 return exp.D
             }else{
                 return exp.LOC + 1
@@ -386,6 +410,15 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    126: {
+        identifier: "TIB",
+        code: 126,
+        execute: (exp) => {
+            RB++
+            return exp.D
+        }
+    },
+
     125: {
         identifier: "TIC",
         code: 125,
@@ -401,6 +434,16 @@ const OP2s: Record<number, TOperation> = {
         execute: (exp) => {
             RA++
             RB++
+            return exp.D
+        }
+    },
+
+    127: {
+        identifier: "TIBC",
+        code: 127,
+        execute: (exp) => {
+            RB++
+            RC++
             return exp.D
         }
     },
@@ -458,6 +501,63 @@ const OP2s: Record<number, TOperation> = {
         code: 145,
         execute: (exp) => {
             RC = exp.D
+            return exp.LOC + 1
+        }
+    },
+
+    205: {
+        identifier: "RADDC",
+        code: 205,
+        execute: (exp) => {
+            AC = unpack(mem[exp.D]).C;
+            return exp.LOC + 1
+        }
+    },
+
+    177: {
+        identifier: "ADDA",
+        code: 177,
+        execute: (exp) => {
+            AC += unpack(mem[exp.D]).A;
+            return exp.LOC + 1
+        }
+    },
+
+    184: {
+        identifier: "ADDB",
+        code: 184,
+        execute: (exp) => {
+            AC += unpack(mem[exp.D]).B;
+            return exp.LOC + 1
+        }
+    },
+
+    190: {
+        identifier: "ADDC",
+        code: 190,
+        execute: (exp) => {
+            AC += unpack(mem[exp.D]).C;
+            return exp.LOC + 1
+        }
+    },
+
+    221: {
+        identifier: "SUBC",
+        code: 221,
+        execute: (exp) => {
+            AC -= unpack(mem[exp.D]).C;
+            return exp.LOC + 1
+        }
+    },
+
+    
+    235: {
+        identifier: "STC",
+        code: 235,
+        execute: (exp) => {
+            let i = unpack(mem[exp.D]);
+            i.C = AC;
+            mem[exp.D] = pack(i);
             return exp.LOC + 1
         }
     },
@@ -656,6 +756,9 @@ export function parseAndLoad(s: string){
     resetHard()
 
     s.split("\n").forEach((l) => {
+        //Remove any trailing comments and whitespace
+        l = l.replace(/\/\/.*$/, '').trim();
+
         //Test if line is expression or data directive
         if(/DATA/.test(l)){
             const parts = l.split(" ")
