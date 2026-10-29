@@ -1,4 +1,5 @@
-import { Tape } from 'tape';
+import { Tape } from 'tape'
+import { Drum } from 'drum'
 
 type TExpression = {
     LOC: number,
@@ -53,6 +54,15 @@ export function setRunning(b){
 export let tapes = {
     "J": new Tape(),
     "K": new Tape()
+}
+
+/**
+ * My fake drums: P and Q
+ * These are not initiated... I don't think?
+ */
+export let drums = {
+    "P": new Drum(),
+    "Q": new Drum()
 }
 
 /**
@@ -289,6 +299,41 @@ const OP1s: Record<number, TOperation> = {
         timing: (exp) => 2.832
     },
 
+    497: {
+        identifier: "WRDRP",
+        code: 497,
+        execute: (exp) => {
+            drums['P'].write(exp.C, mem.slice(Q(exp, "A"), Q(exp, "B") + 1))
+            return exp.LOC + 1
+        }
+    },
+
+    498: {
+        identifier: "WRDRQ",
+        code: 498,
+        execute: (exp) => {
+            drums['Q'].write(exp.C, mem.slice(Q(exp, "A"), Q(exp, "B") + 1))
+            return exp.LOC + 1
+        }
+    },
+
+    526: {
+        identifier: "RFDRP",
+        code: 526,
+        execute: (exp) => {
+            mem.splice(Q(exp, "A"), Q(exp, "B") - Q(exp, "A") + 1, ...drums['P'].read(exp.C, Q(exp, "B") - Q(exp, "A")))
+            return exp.LOC + 1
+        }
+    },
+    
+    528: {
+        identifier: "RFDRQ",
+        code: 528,
+        execute: (exp) => {
+            mem.splice(Q(exp, "A"), Q(exp, "B") - Q(exp, "A") + 1, ...drums['Q'].read(exp.C, Q(exp, "B") - Q(exp, "A")))
+            return exp.LOC + 1
+        }
+    },
 
     /**
      * Extras
