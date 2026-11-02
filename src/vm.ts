@@ -469,6 +469,17 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    138: {
+        identifier: "TDABC",
+        code: 138,
+        execute: (exp) => {
+            RA--
+            RB--
+            RC--
+            return exp.D
+        }
+    },
+
     135: {
         identifier: "TDA",
         code: 135,
@@ -477,6 +488,7 @@ const OP2s: Record<number, TOperation> = {
             return exp.D
         }
     },
+
 
     139: {
         identifier: "SETRA",
@@ -505,11 +517,38 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    199: {
+        identifier: "RADDA",
+        code: 199,
+        execute: (exp) => {
+            AC = unpack(mem[exp.D]).A;
+            return exp.LOC + 1
+        }
+    },
+
+    202: {
+        identifier: "RADDB",
+        code: 202,
+        execute: (exp) => {
+            AC = unpack(mem[exp.D]).B;
+            return exp.LOC + 1
+        }
+    },
+
     205: {
         identifier: "RADDC",
         code: 205,
         execute: (exp) => {
             AC = unpack(mem[exp.D]).C;
+            return exp.LOC + 1
+        }
+    },
+
+    208: {
+        identifier: "RADDD",
+        code: 208,
+        execute: (exp) => {
+            AC = unpack(mem[exp.D]).D;
             return exp.LOC + 1
         }
     },
@@ -541,6 +580,33 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    193: {
+        identifier: "ADDD",
+        code: 193,
+        execute: (exp) => {
+            AC += unpack(mem[exp.D]).D;
+            return exp.LOC + 1
+        }
+    },
+
+    211: {
+        identifier: "SUBA",
+        code: 211,
+        execute: (exp) => {
+            AC -= unpack(mem[exp.D]).A;
+            return exp.LOC + 1
+        }
+    },
+
+    216: {
+        identifier: "SUBB",
+        code: 216,
+        execute: (exp) => {
+            AC -= unpack(mem[exp.D]).B;
+            return exp.LOC + 1
+        }
+    },
+
     221: {
         identifier: "SUBC",
         code: 221,
@@ -550,6 +616,36 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    226: {
+        identifier: "SUBD",
+        code: 226,
+        execute: (exp) => {
+            AC -= unpack(mem[exp.D]).D;
+            return exp.LOC + 1
+        }
+    },
+    
+    251: {
+        identifier: "STA",
+        code: 251,
+        execute: (exp) => {
+            let i = unpack(mem[exp.D]);
+            i.A = AC;
+            mem[exp.D] = pack(i);
+            return exp.LOC + 1
+        }
+    },
+        
+    252: {
+        identifier: "STB",
+        code: 252,
+        execute: (exp) => {
+            let i = unpack(mem[exp.D]);
+            i.B = AC;
+            mem[exp.D] = pack(i);
+            return exp.LOC + 1
+        }
+    },
     
     235: {
         identifier: "STC",
@@ -557,6 +653,17 @@ const OP2s: Record<number, TOperation> = {
         execute: (exp) => {
             let i = unpack(mem[exp.D]);
             i.C = AC;
+            mem[exp.D] = pack(i);
+            return exp.LOC + 1
+        }
+    },
+
+    244: {
+        identifier: "STD",
+        code: 244,
+        execute: (exp) => {
+            let i = unpack(mem[exp.D]);
+            i.D = AC;
             mem[exp.D] = pack(i);
             return exp.LOC + 1
         }
