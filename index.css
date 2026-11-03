@@ -87,3 +87,7 @@ html, body {
     min-height: 0;
     resize: none;
 }
+
+.current-op{
+    background-color: red;
+}
