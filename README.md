@@ -5,11 +5,12 @@ https://archive.computerhistory.org/resources/access/text/2018/02/102678975-05-0
 # How to SpeedCode
 This is a TS implementation, mainly so I can have data types for my sloppy code. To build and run just:
 
-`npm i`
+ * `npm i` to install dependencies
+ * `npm run preview` to build and launch a web server
+ * OR `npm run dev` to launch a dev server with hot module replacement 
 
-`npm run build`
 
-And then open the index.html in the root directly. That will take you to the web frontend.
+And then open the displayed URL in your browser. That will take you to the web frontend.
 
 I'm planning to have a command line entry point aswell, but the web front makes debugging way easier.
 

@@ -1,5 +1,5 @@
-import { Tape } from 'tape'
-import { Drum } from 'drum'
+import { Tape } from './tape'
+import { Drum } from './drum'
 
 type TExpression = {
     LOC: number,
