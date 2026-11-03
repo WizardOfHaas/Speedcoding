@@ -1,4 +1,4 @@
-import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC } from 'vm'
+import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC } from './vm'
 
 function displayMem(){
     document.getElementById("mem").innerHTML = mem.map((d, addr) => {
