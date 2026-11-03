@@ -386,6 +386,18 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    109: {
+        identifier: "TRPL",
+        code: 109,
+        execute: (exp) => {
+            if(mem[Q(exp, "C")] > 0){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
+        }
+    },
+
     112: {
         identifier: "TRZ",
         code: 112,
