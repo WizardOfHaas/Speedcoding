@@ -534,6 +534,15 @@ const OP2s: Record<number, TOperation> = {
         }
     },
 
+    132: {
+        identifier: "TDC",
+        code: 132,
+        execute: (exp) => {
+            RC--
+            return exp.D
+        }
+    },
+
 
     139: {
         identifier: "SETRA",
