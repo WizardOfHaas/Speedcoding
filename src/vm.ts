@@ -936,6 +936,13 @@ export function parseAndLoad(s: string){
         //Remove any trailing comments and whitespace
         l = l.replace(/\/\/.*$/, '').trim();
 
+        //Test if this is a for a valid address
+        const parts = l.split(" ")
+        if(!l.startsWith("%") && (parseInt(parts[0]) < 300 || parseInt(parts[0]) > 1013)){
+            //Just ignore it
+            return
+        }
+
         //Test if line is expression or data directive
         if(/DATA/.test(l)){
             const parts = l.split(" ")
