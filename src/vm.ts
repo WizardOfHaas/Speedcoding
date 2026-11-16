@@ -801,7 +801,7 @@ function binToDec(bits: Array<0 | 1>, start?: number, len?: number): number{
     return parseInt(bits.join(""), 2)
 }
 
-function pack(exp: TExpression): bigint{
+export function pack(exp: TExpression): bigint{
     const bits = [
         0, //Sign
         0, //Pad
@@ -892,6 +892,17 @@ function strToExp(s: string): TExpression{
     }
 }
 
+export function unpackNumber(i: bigint): number{
+    const bits = decToBin(i, 72)
+
+    const f = binToDec(bits, 1, 35)
+    const e = binToDec(bits, 37, 17)
+
+    console.log("decode", f, e)
+
+    return f * 10 ** e
+}
+
 export function resetHard(){
     mem = Array(1024).fill(0)
     clearTapes()
@@ -913,6 +924,11 @@ export function rewindTapes(){
     tapes['K'].rewind()
 }
 
+/**
+ * This is where we do memory map restrictions
+ * 0-299 are restricted for SpeedCo interpreter
+ * 1014-1023 are restricted for .... something
+ */
 export function parseAndLoad(s: string){
     resetHard()
 
@@ -954,6 +970,12 @@ export async function executeExp(exp: TExpression){
     let nextIp = 0
     let timing = 0
 
+    //Update AC
+    const {A, B, C} = unpack(mem[25])
+    RA = A
+    RB = B
+    RC = C
+
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         nextIp = OP1s[exp.OP1].execute(exp)
@@ -971,6 +993,21 @@ export async function executeExp(exp: TExpression){
     }
 
     await sleep(timing)
+
+    //Set 0025 to hold Ra/b/c
+    mem[25] = pack({
+        sign: true,
+        LOC: 25,
+        R: 0,
+        OP1: 0,
+        OP2: 0,
+        D: 0,
+        L: 0,
+
+        A: RA,
+        B: RB,
+        C: RC
+    })
 
     return nextIp
 }
