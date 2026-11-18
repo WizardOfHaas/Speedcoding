@@ -133,3 +133,27 @@ document.getElementById("run").onclick = () => {
 document.getElementById("stop").onclick = () => {
     setRunning(false)
 }
+
+document.getElementById("io-upper-pane-selector").onclick = () => {
+    selectIOPane("io-upper")
+}
+
+document.getElementById("io-lower-pane-selector").onclick = () => {
+    selectIOPane("io-lower")
+}
+
+function selectIOPane(){
+    for (let el of document.getElementsByClassName("io-pane")){
+        el.style.visibility = 'hidden'
+     }
+
+    const upperF = new FormData(document.getElementById("io-upper-pane-selector"))
+    const upperPane = document.getElementById(upperF.get('io-upper') + "-pane")
+    upperPane.style.visibility = 'visible'
+    upperPane.style.gridArea = 'io-upper'
+
+    const lowerF = new FormData(document.getElementById("io-lower-pane-selector"))
+    const lowerPane = document.getElementById(lowerF.get('io-lower') + "-pane")
+    lowerPane.style.visibility = 'visible'
+    lowerPane.style.gridArea = 'io-lower'
+}

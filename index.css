@@ -94,6 +94,18 @@ html, body {
     visibility: hidden;
 }
 
+#drum-P-pane {
+    grid-area: io-lower;
+    overflow: auto;
+    visibility: hidden;
+}
+
+#drum-Q-pane {
+    grid-area: io-lower;
+    overflow: auto;
+    visibility: hidden;
+}
+
 #code-pane {
     grid-area: code;
     display: flex;

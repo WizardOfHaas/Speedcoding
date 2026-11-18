@@ -15,8 +15,9 @@
                 <button id="run">RUN</button>
                 <button id="stop">STOP</button>
 
-                <label for="op-delay">Op Delay</label>
-                <input id="op-delay" type="number" value="50"/>
+                <br>
+                <input type="range" id="speedFactorSlider" min="0" value="0">
+                <span id="speedFactor">1</span>
             </div>
 
             <div id="printer-pane">
@@ -27,53 +28,79 @@
             <div id="registers"></div>
 
             <div id="io-toggles">
-                <!--<button id="tape-J-toggle">Tape J</button>
-                <button id="tape-K-toggle">Tape K</button>
-                <button id="tape-L-toggle">Tape L</button>
-                <button id="tape-M-toggle">Tape M</button>
-
-                <button id="drum-P-toggle">Drum P</button>
-                <button id="drum-Q-toggle">Drum Q</button>-->
-
                 <div>
-                    <input type="radio" id="tape-l-top-selector" name="contact" value="tape-j" />
-                    <label for="tape-l-top-selector">Tape J</label>
-                
-                    <input type="radio" id="tape-l-top-selector" name="contact" value="tape-k" />
-                    <label for="tape-l-top-selector">Tape K</label>
+                    <form id="io-upper-pane-selector">
+                        <input type="radio" id="tape-l-top-selector" name="io-upper" value="tape-J" checked="checked"/>
+                        <label for="tape-l-top-selector">Tape J</label>
+                    
+                        <input type="radio" id="tape-l-top-selector" name="io-upper" value="tape-K" />
+                        <label for="tape-l-top-selector">Tape K</label>
 
-                    <input type="radio" id="tape-l-top-selector" name="contact" value="tape-l" />
-                    <label for="tape-l-top-selector">Tape L</label>
+                        <input type="radio" id="tape-l-top-selector" name="io-upper" value="tape-L" />
+                        <label for="tape-l-top-selector">Tape L</label>
 
-                    <input type="radio" id="tape-m-top-selector" name="contact" value="tape-m" />
-                    <label for="tape-m-top-selector">Tape M</label>
+                        <input type="radio" id="tape-m-top-selector" name="io-upper" value="tape-M" />
+                        <label for="tape-m-top-selector">Tape M</label>
 
-                    <input type="radio" id="drum-P-top-selector" name="contact" value="drum-p" />
-                    <label for="drum-P-top-selector">Drum P</label>
+                        <input type="radio" id="drum-P-top-selector" name="io-upper" value="drum-P" />
+                        <label for="drum-P-top-selector">Drum P</label>
 
-                    <input type="radio" id="drum-q-top-selector" name="contact" value="drum-q" />
-                    <label for="drum-q-top-selector">Drum Q</label>
+                        <input type="radio" id="drum-q-top-selector" name="io-upper" value="drum-Q" />
+                        <label for="drum-q-top-selector">Drum Q</label>
+                    </form>
+                  </div>
+
+                  <div>
+                    <form id="io-lower-pane-selector">
+                        <input type="radio" id="tape-l-top-selector" name="io-lower" value="tape-J" />
+                        <label for="tape-l-top-selector">Tape J</label>
+                    
+                        <input type="radio" id="tape-l-top-selector" name="io-lower" value="tape-K" checked="checked"/>
+                        <label for="tape-l-top-selector">Tape K</label>
+
+                        <input type="radio" id="tape-l-top-selector" name="io-lower" value="tape-L" />
+                        <label for="tape-l-top-selector">Tape L</label>
+
+                        <input type="radio" id="tape-m-top-selector" name="io-lower" value="tape-M" />
+                        <label for="tape-m-top-selector">Tape M</label>
+
+                        <input type="radio" id="drum-P-top-selector" name="io-lower" value="drum-P" />
+                        <label for="drum-P-top-selector">Drum P</label>
+
+                        <input type="radio" id="drum-q-top-selector" name="io-lower" value="drum-Q" />
+                        <label for="drum-q-top-selector">Drum Q</label>
+                    </form>
                   </div>
             </div>
 
-            <div id="tape-J-pane">
+            <div id="tape-J-pane" class="io-pane">
                 <h3>Tape J</h3>
                 <table class='tape' id='tape-J'></table>
             </div>
             
-            <div id="tape-K-pane">
+            <div id="tape-K-pane" class="io-pane">
                 <h3>Tape K</h3>
                 <table class='tape' id='tape-K'></table>
             </div>
 
-            <div id="tape-L-pane">
+            <div id="tape-L-pane" class="io-pane">
                 <h3>Tape L</h3>
                 <table class='tape' id='tape-L'></table>
             </div>
 
-            <div id="tape-M-pane">
+            <div id="tape-M-pane" class="io-pane">
                 <h3>Tape M</h3>
                 <table class='tape' id='tape-M'></table>
+            </div>
+
+            <div id="drum-P-pane" class="io-pane">
+                <h3>Drum P</h3>
+                <table class='tape' id='drum-P'></table>
+            </div>
+
+            <div id="drum-Q-pane" class="io-pane">
+                <h3>Drum Q</h3>
+                <table class='tape' id='drum-Q'></table>
             </div>
 
             <div id="code-pane">
