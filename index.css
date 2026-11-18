@@ -51,7 +51,15 @@ html, body {
 }
 
 #control-pane > input {
-    width: 4ch;
+    width: 80px;
+    vertical-align: middle;
+}
+
+#control-pane #speedFactor {
+    display: inline-block;
+    width: 40px;
+    text-align: right;
+    margin-top: 4px;
 }
 
 #printer-pane {

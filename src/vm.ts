@@ -20,7 +20,7 @@ type TOperation = {
     //This may need to return an address for next execution...
     //  Or I could just do the global state thing
     execute: (exp: TExpression) => number,
-    timing?: (exp: TExpression) => number //In seconds
+    timing?: (exp: TExpression) => number //In milliseconds
 }
 
 export let mem = Array(1024).fill(0)
@@ -29,7 +29,7 @@ export let RB = 0;
 export let RC = 0;
 export let IP = 0;
 export let AC = 0;
-export let running = true
+export let running = false
 
 export function getIp(){
     return IP
@@ -383,6 +383,18 @@ const OP2s: Record<number, TOperation> = {
         code: 104,
         execute: (exp) => {
             return exp.D
+        }
+    },
+
+    109: {
+        identifier: "TRPL",
+        code: 109,
+        execute: (exp) => {
+            if(mem[Q(exp, "C")] > 0){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
         }
     },
 
@@ -905,6 +917,7 @@ export function unpackNumber(i: bigint): number{
 
 export function resetHard(){
     mem = Array(1024).fill(0)
+    elapsedMillis = 0
     clearTapes()
     rewindTapes()
     clearPrinter()
@@ -972,9 +985,17 @@ export function parseAndLoad(s: string){
     rewindTapes()
 }
 
-export async function executeExp(exp: TExpression){
+//The aggregate simulated wall time of all instructions
+//executed so far. This VM does not delay or throttle,
+//the caller may use this to acheive realistic speeds
+//where appropriate
+export let elapsedMillis = 0;
+
+//Returns undefined if the expression is not a valid operation,
+//callers should treat that as a halt (or leave IP alone when stepping)
+export function executeExp(exp: TExpression) : number | undefined {
     //printState()
-    let nextIp = 0
+    let nextIp: number | undefined = undefined
     let timing = 0
 
     //Update AC
@@ -986,20 +1007,26 @@ export async function executeExp(exp: TExpression){
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         nextIp = OP1s[exp.OP1].execute(exp)
-        timing += typeof OP1s[exp.OP1].timing !== "undefined" ? OP1s[exp.OP1].timing(exp) : 0
+        timing += OP1s[exp.OP1].timing?.(exp) ?? 0
     }
 
     if(exp.OP1 in OP1s && exp.OP2 in OP2s){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
         OP1s[exp.OP1].execute(exp)
-        timing += typeof OP1s[exp.OP1].timing !== "undefined" ? OP1s[exp.OP1].timing(exp) : 0
+        timing += OP1s[exp.OP1].timing?.(exp) ?? 0
 
         //console.log("Running OP2: " + OP2s[exp.OP2].identifier)
         nextIp = OP2s[exp.OP2].execute(exp)
-        timing += typeof OP2s[exp.OP2].timing !== "undefined" ? OP2s[exp.OP2].timing(exp) : 0
+        timing += OP2s[exp.OP2].timing?.(exp) ?? 0
     }
 
-    await sleep(timing)
+    //For simulation safety always add some time
+    if ( timing == 0 ){
+        //console.warn("No simulated time elapsed for operation " + prettyOp(exp))
+        timing += 10
+    }
+
+    elapsedMillis += timing;
 
     //Set 0025 to hold Ra/b/c
     mem[25] = pack({
@@ -1019,18 +1046,14 @@ export async function executeExp(exp: TExpression){
     return nextIp
 }
 
-export async function execute(v: bigint){
-    return await executeExp(unpack(v, IP))
+export function execute(v: bigint){
+    return executeExp(unpack(v, IP))
 }
 
-export async function step(){
-    const nextIp = await execute(mem[IP])
+export function step(){
+    const nextIp = execute(mem[IP])
 
     if(typeof nextIp !== 'undefined'){
         IP = nextIp
     }
-}
-
-function sleep(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
 }
