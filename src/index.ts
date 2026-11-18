@@ -5,8 +5,10 @@ const source = fs.readFileSync(process.argv[2], 'utf8')
 
 parseAndLoad(source)
 
+setRunning(true);
+
 while(getRunning()){
-    const nextIp = await execute(mem[getIp()])
+    const nextIp = execute(mem[getIp()])
     printBuffer.forEach( s => process.stdout.write(s + '\n') )
     printBuffer.length = 0
     if(typeof nextIp === "undefined"){
