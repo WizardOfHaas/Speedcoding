@@ -23,10 +23,10 @@ html, body {
     grid-template-columns: 400px auto auto 500px;
     grid-template-rows: minmax(0, 1fr) auto auto minmax(0, 1fr);
     grid-template-areas:
-        "mem code code tape-j"
-        "mem code code tape-j"
-        "mem control registers tape-k"
-        "mem printer printer tape-k";
+        "mem code code io-upper"
+        "mem code code io-upper"
+        "mem control registers io-toggles"
+        "mem printer printer io-lower";
     gap: 10px;
     padding: 10px;
 }
@@ -65,13 +65,25 @@ html, body {
 }
 
 #tape-J-pane {
-    grid-area: tape-j;
+    grid-area: io-upper;
     overflow: auto;
 }
 
 #tape-K-pane {
-    grid-area: tape-k;
+    grid-area: io-lower;
     overflow: auto;
+}
+
+#tape-L-pane {
+    grid-area: io-upper;
+    overflow: auto;
+    visibility: hidden;
+}
+
+#tape-M-pane {
+    grid-area: io-lower;
+    overflow: auto;
+    visibility: hidden;
 }
 
 #code-pane {
