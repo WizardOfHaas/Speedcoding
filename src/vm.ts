@@ -31,12 +31,24 @@ export let IP = 0;
 export let AC = 0;
 export let running = false
 
+//Sense switches
+export let senseP = false
+export let senseQ = false
+
 export function getIp(){
     return IP
 }
 
 export function setIp(n){
     IP = n
+}
+
+export function setSenseP(b: boolean){
+    senseP = b
+}
+
+export function setSenseQ(b: boolean){
+    senseQ = b
 }
 
 export function getRunning(){
@@ -405,6 +417,32 @@ const OP2s: Record<number, TOperation> = {
         code: 112,
         execute: (exp) => {
             if(mem[Q(exp, "C")] === 0){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
+        }
+    },
+
+    
+    117: {
+        identifier: "SNTRP",
+        code: 117,
+        execute: (exp) => {
+            console.log(senseP)
+            if(senseP){
+                return exp.D
+            }else{
+                return exp.LOC + 1
+            }
+        }
+    },
+
+    120: {
+        identifier: "SNTRQ",
+        code: 120,
+        execute: (exp) => {
+            if(senseQ){
                 return exp.D
             }else{
                 return exp.LOC + 1

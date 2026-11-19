@@ -1,4 +1,4 @@
-import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC, elapsedMillis, drums } from './vm'
+import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC, elapsedMillis, drums, setSenseP, setSenseQ } from './vm'
 
 function displayMem(){
     document.getElementById("mem").innerHTML = mem.map((d, addr) => {
@@ -171,4 +171,12 @@ function selectIOPane(){
     const lowerPane = document.getElementById(lowerF.get('io-lower') + "-pane")
     lowerPane.style.visibility = 'visible'
     lowerPane.style.gridArea = 'io-lower'
+}
+
+document.getElementById("sense-p").onclick = () => {
+    setSenseP(document.getElementById("sense-p").checked)
+}
+
+document.getElementById("sense-q").onclick = () => {
+    setSenseQ(document.getElementById("sense-q").checked)
 }
