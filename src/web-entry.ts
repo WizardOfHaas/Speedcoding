@@ -1,4 +1,4 @@
-import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC, elapsedMillis } from './vm'
+import { execute, parseAndLoad, mem, getRunning, getIp, setIp, setRunning, unpack, prettyOp, step, tapes, printBuffer, IP, RA, RB, RC, AC, elapsedMillis, drums } from './vm'
 
 function displayMem(){
     document.getElementById("mem").innerHTML = mem.map((d, addr) => {
@@ -15,6 +15,14 @@ function displayTape(tapeName: string){
         const c = (i === tapes[tapeName].getHead() ? "current-op" : "")
         document.getElementById("tape-" + tapeName).innerHTML += "<tr class='" + c + "'><td>" + r.join(", ") + "</td></tr>"
     })
+}
+
+function displayDrum(drumName: string){
+    document.getElementById("drum-" + drumName).innerHTML = drums[drumName].getData().map((d, addr) => {
+        const op = unpack(d, addr)
+        const prettyOPs = (d !== 0 ? prettyOp(op) : "")
+        return "<tr id='drum-" + drumName + "addr-" + addr + "'><td>" + addr + "</td><td>" + d + "</td><td>" + prettyOPs + "</td></tr>"
+    }).join("")
 }
 
 function displayPrintBuffer(){
@@ -34,8 +42,15 @@ function loadCodePane(){
 
 function showState(){
     displayMem()
+    
     displayTape("J")
     displayTape("K")
+    displayTape("L")
+    displayTape("M")
+
+    displayDrum("P")
+    displayDrum("Q")
+
     displayPrintBuffer()
     displayRegisters()
 }

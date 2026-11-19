@@ -54,7 +54,9 @@ export function setRunning(b){
  */
 export let tapes = {
     "J": new Tape(),
-    "K": new Tape()
+    "K": new Tape(),
+    "L": new Tape(),
+    "M": new Tape()
 }
 
 /**
@@ -930,11 +932,23 @@ export function clearPrinter(){
 export function clearTapes(){
     tapes['J'].clearRecords()
     tapes['K'].clearRecords()
+    tapes['L'].clearRecords()
+    tapes['M'].clearRecords()
 }
 
 export function rewindTapes(){
     tapes['J'].rewind()
     tapes['K'].rewind()
+    tapes['L'].rewind()
+    tapes['M'].rewind()
+}
+
+function preloadTransfer(srcStart: number, srcEnd: number, dest: number | "-", device: string){
+    if(device in tapes){
+        tapes[device].write(mem.slice(srcStart, srcEnd))
+    }else if(device in drums && dest !== "-"){
+        drums[device].write(dest, mem.slice(srcStart, srcEnd))
+    }
 }
 
 /**
@@ -942,6 +956,7 @@ export function rewindTapes(){
  * 0-299 are restricted for SpeedCo interpreter
  * 1014-1023 are restricted for .... something
  */
+const preloadRegex = /^([0-9]{4})\s+([0-9]{4})\s+([0-9]{4}|\-)\s+(J|K|L|M|P|Q)/
 export function parseAndLoad(s: string){
     resetHard()
 
@@ -966,12 +981,22 @@ export function parseAndLoad(s: string){
                 addr++
             })
         }else if(/[0-9]+\s+[A-Z]+\s+[0-9]\s+[0-9]+\s+[0-9]+\s+[0-9]+\s+[A-Z\-]+\s+[0-9\-]+/.test(l)){
+            //Proccess speedco instructions
             const exp = strToExp(l)
             loadExpToMem(exp)
+        }else if(preloadRegex.test(l)){
+            //Proccess load instructions(pg 27)
+            //These will transfer data from memory to tape or drum prior to execution
+            const [srcStart, srcEnd, dest, device] = preloadRegex.exec(l)?.slice(1, 5)
+            preloadTransfer(parseInt(srcStart), parseInt(srcEnd), dest === "-" ? dest : parseInt(dest), device)
         }else if(/^%IP/.test(l)){
             const parts = l.split(' ')
             IP = parseInt(parts[1])
         }else if(/^%TAPE/.test(l)){
+            /*
+            * Tape loading
+            * This is an anachronism, but makes it so that we can define a whole initial state in one file
+            */
             l.trim().split(/\s+/)
             const parts = l.split(' ')
 

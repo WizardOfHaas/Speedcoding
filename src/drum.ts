@@ -2,6 +2,10 @@ export class Drum{
     data: Array<number>
 
     constructor(){
+        this.clear()
+    }
+
+    clear(){
         this.data = Array(1024).fill(0)
     }
 
@@ -11,5 +15,9 @@ export class Drum{
 
     write(addr: number, block: Array<number>){
         this.data.splice(addr, block.length, ...block)
+    }
+
+    getData(){
+        return this.data
     }
 }
