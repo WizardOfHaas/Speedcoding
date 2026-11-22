@@ -502,7 +502,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIA",
         code: 128,
         execute: (exp) => {
-            RA++
+            RA = mod1024(RA + 1)
             return exp.D
         }
     },
@@ -511,7 +511,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIB",
         code: 126,
         execute: (exp) => {
-            RB++
+            RB = mod1024(RB + 1)
             return exp.D
         }
     },
@@ -520,7 +520,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIC",
         code: 125,
         execute: (exp) => {
-            RC++
+            RC = mod1024(RC + 1)
             return exp.D
         }
     },
@@ -529,8 +529,8 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIAB",
         code: 130,
         execute: (exp) => {
-            RA++
-            RB++
+            RA = mod1024(RA + 1)
+            RB = mod1024(RB + 1)
             return exp.D
         }
     },
@@ -539,8 +539,8 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIBC",
         code: 127,
         execute: (exp) => {
-            RB++
-            RC++
+            RB = mod1024(RB + 1)
+            RC = mod1024(RC + 1)
             return exp.D
         }
     },
@@ -549,8 +549,8 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIAC",
         code: 129,
         execute: (exp) => {
-            RA++
-            RC++
+            RA = mod1024(RA + 1)
+            RC = mod1024(RC + 1)
             return exp.D
         }
     },
@@ -559,9 +559,9 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TIABC",
         code: 131,
         execute: (exp) => {
-            RA++
-            RB++
-            RC++
+            RA = mod1024(RA + 1)
+            RB = mod1024(RB + 1)
+            RC = mod1024(RC + 1)
             return exp.D
         }
     },
@@ -570,9 +570,9 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TDABC",
         code: 138,
         execute: (exp) => {
-            RA--
-            RB--
-            RC--
+            RA = mod1024(RA - 1)
+            RB = mod1024(RB - 1)
+            RC = mod1024(RC - 1)
             return exp.D
         }
     },
@@ -581,7 +581,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TDA",
         code: 135,
         execute: (exp) => {
-            RA--
+            RA = mod1024(RA - 1)
             return exp.D
         }
     },
@@ -590,7 +590,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "TDC",
         code: 132,
         execute: (exp) => {
-            RC--
+            RC = mod1024(RC - 1)
             return exp.D
         }
     },
@@ -600,7 +600,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "SETRA",
         code: 139,
         execute: (exp) => {
-            RA = exp.D
+            RA = mod1024(exp.D)
             return exp.LOC + 1
         }
     },
@@ -609,7 +609,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "SETRB",
         code: 250,
         execute: (exp) => {
-            RB = exp.D
+            RB = mod1024(exp.D)
             return exp.LOC + 1
         }
     },
@@ -618,7 +618,7 @@ const OP2s: Record<number, TOperation> = {
         identifier: "SETRC",
         code: 145,
         execute: (exp) => {
-            RC = exp.D
+            RC = mod1024(exp.D)
             return exp.LOC + 1
         }
     },
@@ -810,31 +810,31 @@ function Q(exp: TExpression, arg: string): number{
     },{ //1
         "A": (exp: TExpression) => exp.A,
         "B": (exp: TExpression) => exp.B,
-        "C": (exp: TExpression) => exp.C + RC
+        "C": (exp: TExpression) => mod1024(exp.C + RC)
     },{ //2
         "A": (exp: TExpression) => exp.A,
-        "B": (exp: TExpression) => exp.B + RB,
+        "B": (exp: TExpression) => mod1024(exp.B + RB),
         "C": (exp: TExpression) => exp.C
     },{ //3
         "A": (exp: TExpression) => exp.A,
-        "B": (exp: TExpression) => exp.B + RB,
-        "C": (exp: TExpression) => exp.C + RC
+        "B": (exp: TExpression) => mod1024(exp.B + RB),
+        "C": (exp: TExpression) => mod1024(exp.C + RC)
     },{ //4
-        "A": (exp: TExpression) => exp.A + RA,
+        "A": (exp: TExpression) => mod1024(exp.A + RA),
         "B": (exp: TExpression) => exp.B,
         "C": (exp: TExpression) => exp.C
     },{ //5
-        "A": (exp: TExpression) => exp.A +RA,
+        "A": (exp: TExpression) => mod1024(exp.A + RA),
         "B": (exp: TExpression) => exp.B,
-        "C": (exp: TExpression) => exp.C + RC
+        "C": (exp: TExpression) => mod1024(exp.C + RC)
     },{ //6
-        "A": (exp: TExpression) => exp.A + RA,
-        "B": (exp: TExpression) => exp.B + RB,
+        "A": (exp: TExpression) => mod1024(exp.A + RA),
+        "B": (exp: TExpression) => mod1024(exp.B + RB),
         "C": (exp: TExpression) => exp.C
     },{ //7
-        "A": (exp: TExpression) => exp.A + RA,
-        "B": (exp: TExpression) => exp.B + RB,
-        "C": (exp: TExpression) => exp.C + RC
+        "A": (exp: TExpression) => mod1024(exp.A + RA),
+        "B": (exp: TExpression) => mod1024(exp.B + RB),
+        "C": (exp: TExpression) => mod1024(exp.C + RC)
     }]
 
     return Rs[exp.R][arg](exp)
@@ -1048,6 +1048,10 @@ export function parseAndLoad(s: string){
     rewindTapes()
 }
 
+function mod1024(n) {
+    return ((n % 1024) + 1024) % 1024;
+}
+
 //The aggregate simulated wall time of all instructions
 //executed so far. This VM does not delay or throttle,
 //the caller may use this to acheive realistic speeds
@@ -1063,9 +1067,9 @@ export function executeExp(exp: TExpression) : number | undefined {
 
     //Update AC
     const {A, B, C} = unpack(mem[25])
-    RA = A
-    RB = B
-    RC = C
+    RA = mod1024(A)
+    RB = mod1024(B)
+    RC = mod1024(C)
 
     if(exp.OP1 in OP1s && !(exp.OP2 in OP2s)){
         //console.log("Running OP1: " + OP1s[exp.OP1].identifier)
@@ -1101,9 +1105,9 @@ export function executeExp(exp: TExpression) : number | undefined {
         D: 0,
         L: 0,
 
-        A: RA,
-        B: RB,
-        C: RC
+        A: mod1024(RA),
+        B: mod1024(RB),
+        C: mod1024(RC)
     })
 
     return nextIp

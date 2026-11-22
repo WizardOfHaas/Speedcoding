@@ -3,65 +3,66 @@
 //  Date:   November 2026
 //
 //  Move stack from peg 1 to peg 3 using peg 2 as the spare.
-//  Number of disks is set at instruction 95
+//  Number of disks is set at instruction 395
 //
 //  Output is from, two pairs.
 //  
 //  Recursion is implemented using a stack based function
-//  calling convention. Stack grows down from address 200.
+//  calling convention. Stack grows down from address 1000.
 //  Caller places parameters and return instruction on
 //  the stack, callee is responsible for popping them off.
 //
 //  Items of note.
-//  - Return instruction can do work (see 0105, 0107)
+//  - Return instruction can do work (see 0405, 0407)
 //  - Return value can be pushed. Not used in this demo
-//  - Use base addresses >0200 to peek into the stack
-//      - Gets ugly when pushing params too (0101-0104)
+//  - Use base addresses >1000 to peek into the stack
+//      - Gets ugly when pushing params too (0401-0404)
+//      - Looking >23 back in the stack requires modulo
 //  - Does not respect real speadco usable memory range
 //
 
-%IP 0090 
+%IP 0390 
 
-0000 DATA 0 1 2 3 4 5 6 7
+0350 DATA 0 1 2 3 4 5 6 7
 
 //hanoi(5, 1, 3, 2);
-0090 MOVE   1 0002 0002 0200    TDABC   0091    //Push spare = 2
-0091 MOVE   1 0003 0003 0200    TDABC   0092    //Push to = 3
-0092 MOVE   1 0001 0001 0200    TDABC   0093    //Push from = 1
-0093 MOVE   1 0005 0005 0200    TDABC   0094    //Push n = 5
-0094 MOVE   1 0096 0096 0200    TDABC   0095    //Push return instruction
-0095 NOOP   0 0000 0000 0000    TR      0100    //call function
-0096 NOOP   0 0000 0000 0000    STOP      -
+0390 MOVE   1 0352 0352 1000    TDABC   0391    //Push spare = 2
+0391 MOVE   1 0353 0353 1000    TDABC   0392    //Push to = 3
+0392 MOVE   1 0351 0351 1000    TDABC   0393    //Push from = 1
+0393 MOVE   1 0355 0355 1000    TDABC   0394    //Push n = 5
+0394 MOVE   1 0396 0396 1000    TDABC   0395    //Push return instruction
+0395 NOOP   0 0000 0000 0000    TR      0400    //call function
+0396 NOOP   0 0000 0000 0000    STOP      -
 
 
 //function hanoi(n, from, to, spare)
 
 //Stack has RET, N, from, to, spare
-0100 SUB    5 0202 0001 0202    TRMN    0119   // n = n - 1
+0400 SUB    5 1002 0351 1002    TRMN    0419   // n = n - 1
                                                 // if n < 0 return
 //hanoi(n - 1, from, spare, to);
-0101 MOVE   7 0204 0204 0200    TDABC   0102    //Push to
-0102 MOVE   7 0206 0206 0200    TDABC   0103    //Push spare
-0103 MOVE   7 0205 0205 0200    TDABC   0104    //Push from
-0104 MOVE   7 0205 0205 0200    TDABC   0105    //Push n-1
-0105 MOVE   1 0107 0107 0200    TDABC   0106    //Push return instruction from 0107
-0106 NOOP   0 0000 0000 0000    TR      0100    //Call function
+0401 MOVE   7 1004 1004 1000    TDABC   0402    //Push to
+0402 MOVE   7 1006 1006 1000    TDABC   0403    //Push spare
+0403 MOVE   7 1005 1005 1000    TDABC   0404    //Push from
+0404 MOVE   7 1005 1005 1000    TDABC   0405    //Push n-1
+0405 MOVE   1 0407 0407 1000    TDABC   0406    //Push return instruction from 0407
+0406 NOOP   0 0000 0000 0000    TR      0400    //Call function
 
 //Print FROM, TO
-0107 PRINT  6 0203 0204 0000    TR      0111    
+0407 PRINT  6 1003 1004 0000    TR      0411    
 
 //hanoi(n - 1, spare, to, from);
-0111 MOVE   7 0203 0203 0200    TDABC   0112    //Push from
-0112 MOVE   7 0205 0205 0200    TDABC   0113    //Push to
-0113 MOVE   7 0207 0207 0200    TDABC   0114    //Push spare
-0114 MOVE   7 0205 0205 0200    TDABC   0115    //Push n-1
-0115 MOVE   1 0119 0119 0200    TDABC   0116    //Push return instruction from 0119
-0116 NOOP   0 0000 0000 0000    TR      0100    //call function
+0411 MOVE   7 1003 1003 1000    TDABC   0412    //Push from
+0412 MOVE   7 1005 1005 1000    TDABC   0413    //Push to
+0413 MOVE   7 1007 1007 1000    TDABC   0414    //Push spare
+0414 MOVE   7 1005 1005 1000    TDABC   0415    //Push n-1
+0415 MOVE   1 0419 0419 1000    TDABC   0416    //Push return instruction from 0419
+0416 NOOP   0 0000 0000 0000    TR      0400    //call function
 
 //UNPOP:
-0119 MOVE   6 0201 0201 0124    TIABC   0120    //Pop return instruction to @RET
-0120 NOOP   0 0000 0000 0000    TIABC   0121    //Pop n
-0121 NOOP   0 0000 0000 0000    TIABC   0122    //Pop from
-0122 NOOP   0 0000 0000 0000    TIABC   0123    //Pop to
-0123 NOOP   0 0000 0000 0000    TIABC   0124    //Pop spare
-0124 NOOP   0 0000 0000 0000    -       -       //Return instruction here
+0419 MOVE   6 1001 1001 0424    TIABC   0420    //Pop return instruction to @RET
+0420 NOOP   0 0000 0000 0000    TIABC   0421    //Pop n
+0421 NOOP   0 0000 0000 0000    TIABC   0422    //Pop from
+0422 NOOP   0 0000 0000 0000    TIABC   0423    //Pop to
+0423 NOOP   0 0000 0000 0000    TIABC   0424    //Pop spare
+0424 NOOP   0 0000 0000 0000    -       -       //Return instruction here

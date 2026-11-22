@@ -2,14 +2,14 @@
 //  Author: Bill Kuker <bkuker@billkuker.com>
 //  Date:   October 2026
 
-%IP 0010
+%IP 0310
 
-0030 DATA 1 1 0
+0330 DATA 1 1 0
 
-0010 NOOP   0 0000 0000 0000    SETRA   0000    // Initialize the Ra index counter to zero
-0011 PRINT  0 0030 0030 0000    - -             // Print the value @30
-0012 ADD    0 0030 0031 0032    SKRA    30      // Compute the next value @32 = @31 + @32
+0310 NOOP   0 0000 0000 0000    SETRA   0000    // Initialize the Ra index counter to zero
+0311 PRINT  0 0330 0330 0000    - -             // Print the value @330
+0312 ADD    0 0330 0331 0332    SKRA    30      // Compute the next value @332 = @331 + @332
                                                 // If Ra == 30 Skip next instruction
-0013 MOVE   0 0031 0032 0030    TIA     0011    // Shift the values down; discard <- @30 <- @31 <- @32
-                                                // Increment Ra, goto 11
-0014 NOOP   0 0000 0000 0000    STOP    0014    // Stop
+0313 MOVE   0 0331 0332 0330    TIA     0311    // Shift the values down; discard <- @330 <- @331 <- @332
+                                                // Increment Ra, goto 311
+0314 NOOP   0 0000 0000 0000    STOP    0314    // Stop
